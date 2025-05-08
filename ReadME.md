@@ -1,120 +1,190 @@
-# Integrative Programming and Technologies Project 2025
+# Node.js + MySQL - Boilerplate API with Email Sign Up, Verification, Authentication & Forgot Password
 
-## 📋 Overview
-This project is a comprehensive demonstration of integrative programming concepts and technologies, developed as part of the Final Project for IPT 2025. It showcases the implementation of various programming paradigms, system integration techniques, and modern development practices.
+## Overview
 
-## 🚀 Features
-- User Authentication and Authorization
-- Real-time Data Processing
-- RESTful API Integration
-- Database Management
-- Frontend User Interface
-- Secure Communication Protocols
-- Responsive Design
-- Cross-platform Compatibility
+This boilerplate API provides a foundation for building a secure application using Node.js and MySQL. It includes features such as email sign-up, verification, JWT authentication, role-based authorization, and password management.
 
-## 🛠️ Technologies Used
-- **Frontend:**
-  - React.js
-  - Material-UI
-  - Redux for state management
-  - Axios for API calls
+---
 
-- **Backend:**
-  - Node.js
-  - Express.js
-  - MongoDB
-  - JWT for authentication
+## Features
 
-- **Development Tools:**
-  - Git
-  - npm/yarn
-  - ESLint
-  - Prettier
+- **Email Sign Up and Verification**
+- **JWT Authentication with Refresh Tokens**
+- **Role-Based Authorization (User & Admin)**
+- **Forgot Password and Reset Password Functionality**
+- **Account Management (CRUD) Routes with Role-Based Access Control**
+- **Swagger API Documentation Route**
 
-## 📥 Installation
+---
 
-### Prerequisites
-- Node.js (v14.0.0 or higher)
-- npm (v6.0.0 or higher)
-- MongoDB (v4.0.0 or higher)
-- Git
+## Project Structure
 
-### Getting Started
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/yourusername/ipt-final-2025.git
-cd ipt-final-2025
+```
+/project-root
+│
+├── /_helpers
+│   ├── db.js
+│   ├── role.js
+│   ├── send-email.js
+│   └── swagger.js
+│
+├── /_middleware
+│   ├── authorize.js
+│   ├── error-handler.js
+│   └── validate-request.js
+│
+├── /accounts
+│   ├── account.model.js
+│   ├── refresh-token.model.js
+│   ├── account.service.js
+│   └── accounts.controller.js
+│
+├── config.json
+├── package.json
+└── server.js
 ```
 
-2. **Install dependencies**
+---
+
+## Installation
+
+1. **Install Node.js and NPM**  
+   Download from [Node.js](https://nodejs.org/en/download/).
+
+2. **Install MySQL Community Server**  
+   Download from [MySQL](https://dev.mysql.com/downloads/mysql/).
+
+3. **Install Required Packages**  
+   Run the following command in the project root folder:
+   ```bash
+   npm install
+   ```
+
+4. **Configure SMTP Settings**  
+   Update the `smtpOptions` in `config.json` for email functionality. You can create a free test account at [Ethereal](https://ethereal.email/).
+
+---
+
+## Start the API
+
+Run the following command:
+
+For production mode:
 ```bash
-# Install backend dependencies
-cd backend
-npm install
-
-# Install frontend dependencies
-cd ../frontend
-npm install
-```
-
-3. **Environment Setup**
-```bash
-# In the backend directory
-cp .env.example .env
-```
-Edit the `.env` file with your configuration:
-```env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/ipt_final
-JWT_SECRET=your_jwt_secret
-```
-
-4. **Start the Development Servers**
-```bash
-# Start backend server (from backend directory)
-npm run dev
-
-# Start frontend server (from frontend directory)
 npm start
 ```
 
-The application will be available at:
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:5000`
-
-## 🔧 Configuration
-The project can be configured through various environment variables:
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| PORT | Backend server port | 5000 |
-| MONGODB_URI | MongoDB connection string | mongodb://localhost:27017/ipt_final |
-| JWT_SECRET | Secret key for JWT | null |
-
-## 📚 API Documentation
-API documentation is available at `/api/docs` when running the server locally.
-
-## 🧪 Testing
+For development mode:
 ```bash
-# Run backend tests
-cd backend
-npm test
-
-# Run frontend tests
-cd frontend
-npm test
+npm run start:dev
 ```
 
-## 🚀 Deployment
-1. Build the frontend:
+---
+
+## API Endpoints
+
+### Register a New Account
+- **Endpoint:** `POST /accounts/register`
+- **Body:**
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "yourpassword"
+  }
+  ```
+
+### Verify Email
+- **Endpoint:** `POST /accounts/verify-email`
+- **Body:**
+  ```json
+  {
+    "token": "verification_token"
+  }
+  ```
+
+### Forgot Password
+- **Endpoint:** `POST /accounts/forgot-password`
+- **Body:**
+  ```json
+  {
+    "email": "user@example.com"
+  }
+  ```
+
+### Reset Password
+- **Endpoint:** `POST /accounts/reset-password`
+- **Body:**
+  ```json
+  {
+    "token": "reset_token",
+    "password": "newpassword",
+    "confirmPassword": "newpassword"
+  }
+  ```
+
+### Authenticate
+- **Endpoint:** `POST /accounts/authenticate`
+- **Body:**
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "yourpassword"
+  }
+  ```
+
+### Get All Accounts (Admin Only)
+- **Endpoint:** `GET /accounts`
+- **Authorization:** Bearer Token
+
+### Update Account
+- **Endpoint:** `PUT /accounts/{id}`
+- **Authorization:** Bearer Token
+- **Body:**
+  ```json
+  {
+    "firstName": "NewFirstName",
+    "lastName": "NewLastName"
+  }
+  ```
+
+### Refresh Token
+- **Endpoint:** `POST /accounts/refresh-token`
+
+---
+
+## Node Packages
+
+### Required Packages
 ```bash
-cd frontend
-npm run build
+npm install bcryptjs body-parser cookie-parser cors dotenv express express-jwt helmet http-status-codes joi jsonwebtoken mysql2 nodemailer nodemailer-express-handlebars nodemon rootpath sequelize sqlite3 swagger-ui-express uuid yamljs
 ```
 
-2. Set up production environment variables
-3. Deploy to your preferred hosting service (e.g., Heroku, AWS, DigitalOcean)
+### Development Packages
+```bash
+npm install --save-dev @types/bcryptjs @types/cors @types/dotenv @types/express @types/helmet @types/http-status-codes @types/uuid ts-node-dev typescript
+```
 
-## �� Project Structure
+---
+
+## Team Assignments
+
+### Backend Developer (API)
+- **@ Niel Ivan M. Eroy**
+
+### Frontend Developer (Angular)
+- **@Rey Nino Perez**
+
+### Tester (API and Frontend Testing)
+- **@Sean Ivan Ostra**
+
+### Documentation Specialist (README.md)
+- **Jurace L. Lomutos**
+
+### DevOps Lead (Repository Setup, Branch Management, CI/CD Pipeline if Applicable)
+- **@Andrew Czar S. Mata**
+
+---
+
+# Collaborative Development of a Full-Stack Application
+## Hotel Management System
+
