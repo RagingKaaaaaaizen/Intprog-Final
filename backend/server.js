@@ -4,7 +4,7 @@ const app = express();
 
 // Enhanced CORS middleware for frontend integration
 app.use(cors({
-  origin: ['http://localhost:4200', 'http://localhost:4000', 'https://employee-management-frontend.yourusername.repl.co', 'https://*.repl.co'],
+  origin: ['http://localhost:4200', 'http://localhost:4000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -12,11 +12,6 @@ app.use(cors({
 
 // parse requests of content-type - application/json
 app.use(express.json());
-
-// Root route for health checks
-app.get('/', (req, res) => {
-  res.send('Employee Management API is running');
-});
 
 // api routes
 app.use('/accounts', require('./accounts/accounts.controller'));
@@ -43,7 +38,7 @@ API Integration Info:
 - Email verification tokens will be shown in this console
 
 For Frontend connection:
-- API is accessible at this Replit URL
+- Start Angular frontend with: 'npm start' in frontend folder
 - API uses Ethereal to simulate email delivery
 - Verification tokens are displayed here instead of sent by email
 =======================================================
