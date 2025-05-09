@@ -1,0 +1,61 @@
+﻿<div class="card">
+    <h4 class="card-header">Email Verification</h4>
+    <div class="card-body">
+        <div *ngIf="!token && !verificationComplete" class="alert alert-info">
+            <h5>Verification Token Required</h5>
+            <p>Please enter the verification token from your email.</p>
+            <p>You should have received an email with a token similar to this format:</p>
+            <pre style="background:#f0f0f0;padding:10px;border-radius:5px;font-size:85%">
+b1c2d3e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z5</pre>
+            <p>You can either:</p>
+            <ul>
+                <li>Copy and paste the token from your email to the field below</li>
+                <li>Use the verification link in the email directly</li>
+                <li>If you haven't received an email, you can <a routerLink="/account/login">sign in</a> to trigger a new verification email</li>
+            </ul>
+        </div>
+        
+        <div *ngIf="tokenInProgress" class="alert alert-info">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Verifying...</span>
+                </div>
+                <div class="ml-2">Verifying your email...</div>
+            </div>
+        </div>
+        
+        <div *ngIf="verificationComplete" class="alert alert-success">
+            <h5>Verification Successful!</h5>
+            <p>Your email has been verified successfully.</p>
+            <p>You can now <a routerLink="../login" class="btn btn-primary">Login</a> to your account.</p>
+        </div>
+        
+        <form *ngIf="!tokenInProgress && !verificationComplete" (ngSubmit)="onSubmit()">
+            <div class="form-group">
+                <label>Verification Token</label>
+                <input type="text" [(ngModel)]="token" name="token" class="form-control" 
+                    [ngClass]="{ 'is-invalid': submitted && !token }"
+                    placeholder="Enter your verification token here" />
+                <div *ngIf="submitted && !token" class="invalid-feedback">Verification token is required</div>
+                <small class="form-text text-muted">The token is a long string of characters sent to your email.</small>
+            </div>
+            <div class="form-group">
+                <button [disabled]="loading" class="btn btn-primary">
+                    <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                    Verify Email
+                </button>
+                <a routerLink="../login" class="btn btn-link">Return to Login</a>
+            </div>
+        </form>
+        
+        <div *ngIf="!verificationComplete" class="mt-4">
+            <h5>Need Help?</h5>
+            <p>If you're having trouble with verification, you can:</p>
+            <ul>
+                <li>Check your email inbox and spam folder for the verification email</li>
+                <li>Try to <a routerLink="../login">login again</a> to receive a new verification email</li>
+                <li>Register a new account if you can't access your original email</li>
+            </ul>
+        </div>
+    </div>
+</div>

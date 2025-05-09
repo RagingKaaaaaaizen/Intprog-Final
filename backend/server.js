@@ -2,8 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-// CORS middleware
-app.use(cors());
+// Enhanced CORS middleware for frontend integration
+app.use(cors({
+  origin: ['http://localhost:4200', 'http://localhost:4000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // parse requests of content-type - application/json
 app.use(express.json());
@@ -26,22 +31,16 @@ app.listen(port, () => {
    Employee Management API Server Running on Port ${port}
 =======================================================
 
-API Testing Guide:
-1. Register: POST http://localhost:${port}/accounts/register
-   Body: {
-     "firstName": "Test",
-     "lastName": "User",
-     "email": "test@example.com",
-     "password": "Password123!"
-   }
+API Integration Info:
+- API server is now integrated with Angular frontend
+- Registration and authentication work with the frontend UI
+- Ethereal emails will be generated for testing
+- Email verification tokens will be shown in this console
 
-2. Verify Email: POST http://localhost:${port}/accounts/verify-email
-   (Verification token will be shown in console)
-
-3. Login: POST http://localhost:${port}/accounts/authenticate
-   
-Ethereal emails will be automatically generated for testing
-and preview links will be shown in the console.
+For Frontend connection:
+- Start Angular frontend with: 'npm start' in frontend folder
+- API uses Ethereal to simulate email delivery
+- Verification tokens are displayed here instead of sent by email
 =======================================================
 `);
 });

@@ -21,7 +21,27 @@ module.exports = {
 async function authenticate({ email, password, ipAddress }) {
     const account = await db.Account.scope('withHash').findOne({ where: { email } });
 
-    if (!account || !account.verified || !(await bcrypt.compare(password, account.passwordHash))) {
+    // Check if account exists
+    if (!account) {
+        throw 'Email or password is incorrect';
+    }
+    
+    // Check if email is verified
+    if (!account.verified) {
+        // Generate a new verification token if needed
+        if (!account.verificationToken) {
+            account.verificationToken = randomTokenString();
+            await account.save();
+        }
+        
+        // Send a new verification email
+        await sendVerificationEmail(account, ipAddress);
+        
+        throw 'Email not verified. Please check your email for verification instructions';
+    }
+    
+    // Check if password is correct
+    if (!(await bcrypt.compare(password, account.passwordHash))) {
         throw 'Email or password is incorrect';
     }
 
@@ -88,25 +108,43 @@ async function register(params, origin) {
     // save account
     await account.save();
     
-    console.log(`\nAccount registered! Email: ${params.email}, Verification Token: ${account.verificationToken}`);
-    console.log(`For Postman testing, use POST /accounts/verify-email with body: { "token": "${account.verificationToken}" }\n`);
+    console.log(`
+==============================================================
+ACCOUNT REGISTERED!
+Email: ${params.email}
+Verification Token: ${account.verificationToken}
+==============================================================
+    `);
 
-    // send email
-    await sendVerificationEmail(account, origin);
+    // send email and return the email preview URL for frontend display
+    const emailInfo = await sendVerificationEmail(account, origin);
+    
+    // Return verification token and email preview URL (if using Ethereal)
+    return {
+        message: "Registration successful, please verify your email",
+        verificationToken: account.verificationToken,
+        etherealPreviewUrl: emailInfo?.previewUrl || null
+    };
 }
 
 async function verifyEmail({ token }) {
     const account = await db.Account.findOne({ where: { verificationToken: token } });
 
-    if (!account) throw 'Verification failed';
+    if (!account) throw 'Verification failed. Invalid token.';
 
     account.verified = Date.now();
     account.verificationToken = null;
     await account.save();
     
-    console.log(`\nEmail verified successfully for: ${account.email}!`);
-    console.log(`You can now authenticate with POST /accounts/authenticate`);
-    console.log(`Body: { "email": "${account.email}", "password": "your-password" }\n`);
+    console.log(`
+==============================================================
+EMAIL VERIFIED SUCCESSFULLY!
+Email: ${account.email}
+Account is now verified and ready for login.
+==============================================================
+    `);
+    
+    return { message: 'Verification successful, you can now login' };
 }
 
 async function getAll() {
@@ -193,29 +231,63 @@ function basicDetails(account) {
 async function sendVerificationEmail(account, origin) {
     let message;
     if (origin) {
-        const verifyUrl = `${origin}/verify-email?token=${account.verificationToken}`;
+        const verifyUrl = `${origin}/account/verify-email?token=${account.verificationToken}`;
         message = `<p>Please click the below link to verify your email address:</p>
-                   <p><a href="${verifyUrl}">${verifyUrl}</a></p>`;
+                   <p><a href="${verifyUrl}">${verifyUrl}</a></p>
+                   <p>Your verification token is: <strong>${account.verificationToken}</strong></p>`;
     } else {
         message = `<p>Please use the below token to verify your email address with the <code>/accounts/verify-email</code> api route:</p>
                    <p><code>${account.verificationToken}</code></p>`;
     }
 
-    await sendEmail({
+    const emailInfo = await sendEmail({
         to: account.email,
         subject: 'Sign-up Verification - Verify Email',
         html: `<h4>Verify Email</h4>
                <p>Thanks for registering!</p>
                ${message}`
     });
+    
+    return emailInfo;
 }
 
 async function sendAlreadyRegisteredEmail(email, origin) {
-    let message;
+    // Look up the account to get the verification status and token
+    const account = await db.Account.findOne({ where: { email } });
+    let verificationSection = '';
+    
+    // Check if account exists but is not verified
+    if (account && !account.verified) {
+        // Create a new verification token if needed
+        if (!account.verificationToken) {
+            account.verificationToken = randomTokenString();
+            await account.save();
+        }
+        
+        // Add verification instructions to the email
+        const verifyUrl = origin 
+            ? `${origin}/account/verify-email?token=${account.verificationToken}`
+            : null;
+            
+        verificationSection = `
+            <div style="margin-top: 20px; padding: 15px; border: 1px solid #d4edda; background-color: #d4edda; border-radius: 5px;">
+                <h4 style="color: #155724;">Your Account Needs Verification</h4>
+                <p>It appears you have registered but have not verified your email yet.</p>
+                ${verifyUrl ? 
+                    `<p>Please click this link to verify your email address:</p>
+                    <p><a href="${verifyUrl}" style="display: inline-block; padding: 10px 15px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">${verifyUrl}</a></p>` 
+                    :
+                    `<p>Please use this token to verify your email address:</p>
+                    <p style="padding: 10px; background-color: #f8f9fa; border-radius: 5px; font-family: monospace;">${account.verificationToken}</p>`
+                }
+            </div>`;
+    }
+    
+    let passwordResetSection = '';
     if (origin) {
-        message = `<p>If you don't know your password please visit the <a href="${origin}/forgot-password">forgot password</a> page.</p>`;
+        passwordResetSection = `<p>If you don't know your password please visit the <a href="${origin}/account/forgot-password">forgot password</a> page.</p>`;
     } else {
-        message = `<p>If you don't know your password you can reset it via the <code>/accounts/forgot-password</code> api route.</p>`;
+        passwordResetSection = `<p>If you don't know your password you can reset it via the <code>/accounts/forgot-password</code> api route.</p>`;
     }
 
     await sendEmail({
@@ -223,6 +295,7 @@ async function sendAlreadyRegisteredEmail(email, origin) {
         subject: 'Sign-up Verification - Email Already Registered',
         html: `<h4>Email Already Registered</h4>
                <p>Your email <strong>${email}</strong> is already registered.</p>
-               ${message}`
+               ${passwordResetSection}
+               ${verificationSection}`
     });
 } 

@@ -1,0 +1,19 @@
+{
+    "database": {
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "mamang99",
+        "database": "employee_management"
+    },
+    "email": {
+        "host": "smtp.ethereal.email",
+        "port": 587,
+        "user": "",
+        "password": ""
+    },
+    "secret": "THIS_IS_SECRET_KEY_CHANGE_IN_PRODUCTION",
+    "refreshTokenSecret": "THIS_IS_REFRESH_TOKEN_SECRET_KEY_CHANGE_IN_PRODUCTION",
+    "tokenExpiryTime": "15m",
+    "refreshTokenExpiryTime": "7d"
+}

@@ -1,0 +1,38 @@
+<h1>Requests</h1>
+<p>All employee requests from secure (admin only) API endpoint:</p>
+<a routerLink="add" class="btn btn-sm btn-success mb-2">Create Request</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Notes</th>
+            <th>Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let request of requests">
+            <td>{{request.type}}</td>
+            <td>{{request.status}}</td>
+            <td>{{request.notes}}</td>
+            <td>{{request.created | date:'short'}}</td>
+            <td style="white-space: nowrap">
+                <a [routerLink]="['/admin/requests', request.id]" class="btn btn-sm btn-info mr-1">View</a>
+                <a [routerLink]="['/admin/requests/edit', request.id]" class="btn btn-sm btn-primary mr-1">Edit</a>
+                <button (click)="deleteRequest(request.id)" class="btn btn-sm btn-danger" [disabled]="isDeleting">
+                    <span *ngIf="isDeleting" class="spinner-border spinner-border-sm"></span>
+                    <span *ngIf="!isDeleting">Delete</span>
+                </button>
+            </td>
+        </tr>
+        <tr *ngIf="loading">
+            <td colspan="5" class="text-center">
+                <span class="spinner-border spinner-border-lg align-center"></span>
+            </td>
+        </tr>
+        <tr *ngIf="!loading && requests.length === 0">
+            <td colspan="5" class="text-center">No requests found.</td>
+        </tr>
+    </tbody>
+</table>

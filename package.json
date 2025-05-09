@@ -1,0 +1,14 @@
+{
+  "name": "employee-management-system",
+  "version": "1.0.0",
+  "description": "Employee Management System with Angular Frontend and Node.js Backend",
+  "main": "start-servers.js",
+  "scripts": {
+    "start": "node start-servers.js",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm start",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "author": "",
+  "license": "MIT"
+} 

@@ -8,6 +8,7 @@ async function sendEmail({ to, subject, html, from = 'Employee Management System
     // Create a test account on Ethereal if config email isn't set up
     let testAccount;
     let transporter;
+    let previewUrl = null;
     
     if (config.email.host === 'smtp.ethereal.email' && 
         (config.email.user === 'ethereal.user@ethereal.email' || !config.email.user)) {
@@ -40,13 +41,18 @@ async function sendEmail({ to, subject, html, from = 'Employee Management System
     
     // If using Ethereal, log the preview URL
     if (testAccount) {
+        previewUrl = nodemailer.getTestMessageUrl(info);
         console.log('\n');
         console.log('------ EMAIL SENT ------');
         console.log(`To: ${to}`);
         console.log(`Subject: ${subject}`);
-        console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+        console.log(`Preview URL: ${previewUrl}`);
         console.log('------------------------\n');
     }
     
-    return info;
+    // Return info along with the preview URL if available
+    return { 
+        ...info,
+        previewUrl 
+    };
 } 
