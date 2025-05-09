@@ -1,0 +1,103 @@
+<h1>Request Details</h1>
+
+<div *ngIf="loading" class="text-center">
+    <span class="spinner-border spinner-border-lg"></span>
+</div>
+
+<div *ngIf="request && !loading" class="request-details">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">{{request.type}}</h3>
+                    <span class="badge" 
+                        [ngClass]="{'badge-warning': request.status === 'Pending', 
+                                    'badge-info': request.status === 'In Progress',
+                                    'badge-success': request.status === 'Approved' || request.status === 'Completed',
+                                    'badge-danger': request.status === 'Rejected'}">
+                        {{request.status}}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">Employee ID:</div>
+                        <div class="col-md-8">{{request.employeeId}}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">Date Created:</div>
+                        <div class="col-md-8">{{request.created | date:'medium'}}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">Last Updated:</div>
+                        <div class="col-md-8">{{request.updated | date:'medium'}}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4 font-weight-bold">Notes:</div>
+                        <div class="col-md-8">{{request.notes || 'No notes provided'}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Actions</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" (click)="editRequest()" [disabled]="loading">
+                            <i class="fas fa-edit mr-1"></i> Edit Request
+                        </button>
+                        <button class="btn btn-danger" (click)="deleteRequest()" [disabled]="loading">
+                            <i class="fas fa-trash mr-1"></i> Delete Request
+                        </button>
+                        <a routerLink="/admin/requests" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left mr-1"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4 class="mb-0">Request Items</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of request.items">
+                        <td>{{item.name}}</td>
+                        <td>{{item.quantity}}</td>
+                        <td>
+                            <span class="badge" 
+                                [ngClass]="{'badge-warning': item.status === 'Pending', 
+                                            'badge-info': item.status === 'In Progress',
+                                            'badge-success': item.status === 'Approved' || item.status === 'Completed',
+                                            'badge-danger': item.status === 'Rejected'}">
+                                {{item.status}}
+                            </span>
+                        </td>
+                        <td>{{item.notes || 'No notes provided'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div *ngIf="!request.items || request.items.length === 0" class="alert alert-info">
+                No items found for this request.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="!request && !loading" class="alert alert-danger">
+    Request not found.
+</div> 

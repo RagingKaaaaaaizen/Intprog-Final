@@ -1,0 +1,55 @@
+<div class="card">
+    <h4 class="card-header">Email Verification Preview</h4>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <h5>Your account has been registered!</h5>
+            <p>In a real-world scenario, we would send an email to: <strong>{{email}}</strong></p>
+            <p>Since this application uses Ethereal Mail for testing, we're displaying the verification details directly here.</p>
+        </div>
+        
+        <div class="card bg-light mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">Your Verification Token</h5>
+                <div class="alert alert-success p-3 mb-3">
+                    <span class="h4">{{verificationToken}}</span>
+                </div>
+                <p>Use this token to verify your account</p>
+            </div>
+        </div>
+        
+        <div class="email-preview-container p-3 border rounded mb-4">
+            <div class="email-preview-header bg-light p-2 mb-3 border-bottom">
+                <div><strong>From:</strong> Employee Management System &lt;noreply&#64;employee-system.com&gt;</div>
+                <div><strong>To:</strong> {{email}}</div>
+                <div><strong>Subject:</strong> Sign-up Verification - Verify Email</div>
+            </div>
+            
+            <div class="email-preview-body p-2">
+                <h4>Verify Email</h4>
+                <p>Thanks for registering!</p>
+                <p>Please click the below link to verify your email address:</p>
+                <div class="mb-3 mt-3">
+                    <a (click)="verifyNow()" class="btn btn-primary">
+                        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                        Verify My Email Now
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card bg-light mb-4">
+            <div class="card-body">
+                <h5 class="card-title">View Complete Email in Ethereal</h5>
+                <p>You can view the complete email in Ethereal's test inbox:</p>
+                <button (click)="openEtherealMail()" class="btn btn-info">
+                    <i class="fa fa-external-link"></i> Open in Ethereal Mail
+                </button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <a routerLink="/account/verify-email" [queryParams]="{token: verificationToken}" class="btn btn-outline-primary mr-2">Go to Manual Verification</a>
+            <a routerLink="/account/login" class="btn btn-link">Return to Login</a>
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,303 @@
+﻿Integrative Programming and Technologies ~ Final
+Full-Stack Application
+Project Description
+A full-stack application for user authentication, account management, employee management with dynamic departments, transactional workflows, and employee requests. Built using Node.js + MySQL for the backend and Angular 17/19 for the frontend. Key features include email-based user registration with verification, JWT-based authentication and authorization, and role-based access control (Admin and User roles).
+Features Overview
+Accounts & Authentication
+* Email Sign-Up: Users can register with an email and password, receiving a verification email to activate their account.
+* Verify Email: Email verification link sent via SMTP (using Ethereal for testing) to confirm user registration.
+* Authentication: JWT-based authentication with access and refresh tokens.
+* Authorization: Role-based access control (Admin and User roles). Admins have elevated privileges (e.g., managing employees, departments, workflows, requests).
+* Account Management: Users can view and update their profiles, change passwords, and manage refresh tokens.
+Employees
+* Employee Management: Create, read, update, and delete (CRUD) employees with details like Employee ID, Account assignment, position, Department, hire date, and status.
+* Department Transfer: Admins can transfer employees between departments, creating a workflow entry for tracking.
+Departments
+* Department Management: CRUD operations for departments with fields for name and description.
+* Employee Assignment: Departments are linked to employees, showing employee counts per department.
+Workflows
+* Transactional Workflows: Create workflows for employee-related actions (e.g., onboarding, department changes, employee requests).
+* Status Management: Update workflow status (e.g., Pending, Approved, Rejected) with detailed tracking.
+Requests
+* Employee Requests: Employees can create requests (e.g., equipment, leave, resources) with a header (type, status) and a list of items (e.g., name, quantity).
+* Request Management: Admins can view, update, and delete requests. Users can view their own requests.
+Setup Instructions
+Prerequisites
+* Node.js (v16+)
+* MySQL Community Server
+* Angular CLI (v19+)
+* Postman (for API testing)
+Backend Setup
+1. Clone the repository: git clone <repository-url>
+2. Navigate to the backend folder: cd backend
+3. Install dependencies: npm install
+4. Configure MySQL and SMTP settings in config.json:
+  
+
+5. Start the backend: npm start
+Frontend Setup
+1. Navigate to the frontend folder: cd frontend
+2. Install dependencies: npm install
+3. Start the frontend: ng serve
+4. To use the fake backend, ensure FakeBackendInterceptor is included in app.module.ts. To switch to the real backend, remove it and update environment.apiUrl to http://localhost:4000.
+Code Implementation
+Backend API (Node.js + MySQL)
+Employees
+employees/index.js
+  
+  
+  
+
+Departments
+departments/index.js
+  
+  
+
+Workflows
+workflows/index.js
+  
+  
+
+Requests
+requests/index.js
+  
+  
+  
+
+Frontend (Angular)
+Employees
+employees/list.component.html
+  
+  
+
+employees/add-edit.component.html
+  
+  
+
+employees/transfer.component.html
+  
+
+Departments
+departments/list.component.html
+  
+
+departments/add-edit.component.html
+  
+
+Workflows
+workflows/list.component.html
+  
+
+Requests
+requests/list.component.html
+  
+  
+
+requests/add-edit.component.html
+  
+  
+
+Fake Backend Provider (Angular)
+fake-backend.ts
+  
+  
+  
+  
+  
+  
+  
+
+API Endpoints
+Accounts
+Method
+	Endpoint
+	Description
+	Authentication
+	POST
+	/accounts/register
+	Register a new user
+	None
+	POST
+	/accounts/verify-email
+	Verify email with token
+	None
+	POST
+	/accounts/authenticate
+	Authenticate user and get JWT tokens
+	None
+	POST
+	/accounts/refresh-token
+	Refresh JWT token
+	None
+	POST
+	/accounts/revoke-token
+	Revoke refresh token
+	Authenticated
+	GET
+	/accounts
+	Get all accounts
+	Admin
+	GET
+	/accounts/:id
+	Get account by ID
+	Authenticated
+	PUT
+	/accounts/:id
+	Update account
+	Authenticated
+	Example Request (POST /accounts/register):
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "password": "Password123!"
+}
+Employees
+Method
+	Endpoint
+	Description
+	Authentication
+	POST
+	/employees
+	Create a new employee
+	Admin
+	GET
+	/employees
+	Get all employees
+	Authenticated
+	GET
+	/employees/:id
+	Get employee by ID
+	Authenticated
+	PUT
+	/employees/:id
+	Update employee
+	Admin
+	DELETE
+	/employees/:id
+	Delete employee
+	Admin
+	POST
+	/employees/:id/transfer
+	Transfer employee to a new department
+	Admin
+	Example Request (POST /employees):
+{
+  "employeeId": "EMP001",
+  "userId": 1,
+  "position": "Developer",
+  "hireDate": "2025-01-01",
+  "departmentId": 1
+}
+Departments
+Method
+	Endpoint
+	Description
+	Authentication
+	POST
+	/departments
+	Create a new department
+	Admin
+	GET
+	/departments
+	Get all departments
+	Authenticated
+	GET
+	/departments/:id
+	Get department by ID
+	Authenticated
+	PUT
+	/departments/:id
+	Update department
+	Admin
+	DELETE
+	/departments/:id
+	Delete department
+	Admin
+	Example Request (POST /departments):
+{
+  "name": "Engineering",
+  "description": "Software development team"
+}
+Workflows
+Method
+	Endpoint
+	Description
+	Authentication
+	POST
+	/workflows
+	Create a new workflow
+	Admin
+	GET
+	/workflows/employee/:employeeId
+	Get workflows for an employee
+	Authenticated
+	PUT
+	/workflows/:id/status
+	Update workflow status
+	Admin
+	POST
+	/workflows/onboarding
+	Initiate employee onboarding
+	Admin
+	Example Request (POST /workflows):
+{
+  "employeeId": 1,
+  "type": "Onboarding",
+  "details": { "task": "Setup workstation" }
+}
+Requests
+Method
+	Endpoint
+	Description
+	Authentication
+	POST
+	/requests
+	Create a new request
+	Authenticated
+	GET
+	/requests
+	Get all requests
+	Admin
+	GET
+	/requests/:id
+	Get request by ID
+	Authenticated
+	GET
+	/requests/employee/:employeeId
+	Get requests for an employee
+	Authenticated
+	PUT
+	/requests/:id
+	Update request
+	Admin
+	DELETE
+	/requests/:id
+	Delete request
+	Admin
+	Example Request (POST /requests):
+{
+  "employeeId": 1,
+  "type": "Equipment",
+  "items": [
+    { "name": "Laptop", "quantity": 1 },
+    { "name": "Monitor", "quantity": 2 }
+  ]
+}
+Frontend Features
+* User Authentication: Email sign-up with verification, login/logout, and profile management.
+* Role-Based Access: Admin users have access to additional features (e.g., employee management, department management).
+* Employee Management: View, add, edit, transfer, and delete employees with user and department assignments.
+* Department Management: Manage dynamic departments as a settings module.
+* Workflow Management: Create and manage transactional workflows (e.g., onboarding, department changes).
+* Request Management: Create and manage employee requests with multiple items (e.g., equipment, leave).
+* Responsive UI: Bootstrap-based tables and forms with validation and error handling.
+* Fake Backend: Simulates API responses for development without a real backend.
+Testing Instructions
+Backend
+1. Use Postman to test API endpoints (e.g., POST http://localhost:4000/accounts/register).
+2. Run unit tests: npm test (requires test setup in package.json).
+Frontend
+1. Test with fake backend: Ensure FakeBackendInterceptor is in app.module.ts and run ng serve.
+2. Test with real backend: Remove FakeBackendInterceptor, update environment.apiUrl, and run ng serve.
+3. Run unit tests: ng test.
